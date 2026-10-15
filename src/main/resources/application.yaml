@@ -1,3 +1,21 @@
 spring:
   application:
     name: jwt-secured-rest-api
+
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST}:3306/${MYSQL_DATABASE}
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update # Create (or update) the database on startup if needed
+    show-sql: true
+  
+  jwt:
+    issuer: jwt-secured-rest-api
+    ttl-minutes: ${TTL_MINUTES}
+
+  rsa:
+    private-key: classpath:certs/private.pem
+    public-key: classpath:certs/public.pem
