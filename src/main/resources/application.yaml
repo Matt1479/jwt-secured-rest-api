@@ -12,10 +12,10 @@ spring:
       ddl-auto: update # Create (or update) the database on startup if needed
     show-sql: true
   
-  jwt:
-    issuer: jwt-secured-rest-api
-    ttl-minutes: ${TTL_MINUTES}
+jwt:
+  issuer: jwt-secured-rest-api
+  ttl-minutes: ${TTL_MINUTES}
 
-  rsa:
-    private-key: classpath:certs/private.pem
-    public-key: classpath:certs/public.pem
+rsa:
+  private-key: classpath:certs/private.pem
+  public-key: classpath:certs/public.pem
