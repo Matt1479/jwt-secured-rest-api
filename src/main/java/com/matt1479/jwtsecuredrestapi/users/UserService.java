@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,9 +16,13 @@ import com.matt1479.jwtsecuredrestapi.users.dto.UserResponse;
 public class UserService {
     
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional 
@@ -27,8 +32,9 @@ public class UserService {
                 HttpStatus.CONFLICT, "Username is already taken");
         }
 
-        // TODO: use password encoder to encode the password
-        User user = new User(username, rawPassword, Set.of(Role.USER));
+        String passwordHash = passwordEncoder.encode(rawPassword);
+
+        User user = new User(username, passwordHash, Set.of(Role.USER));
 
         // TODO: handle race condition
         User savedUser = userRepository.save(user);
