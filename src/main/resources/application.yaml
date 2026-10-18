@@ -14,7 +14,7 @@ spring:
   
 jwt:
   issuer: jwt-secured-rest-api
-  ttl-minutes: ${TTL_MINUTES}
+  ttl-minutes: ${TTL_MINUTES:60}
 
 rsa:
   private-key: classpath:certs/private.pem
