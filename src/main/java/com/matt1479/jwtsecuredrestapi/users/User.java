@@ -91,6 +91,14 @@ public class User {
         return passwordHash;
     }
 
+    public void setPasswordHash(String passwordHash) {
+        if (passwordHash == null || passwordHash.isBlank()) {
+            throw new IllegalArgumentException("PasswordHash is required");
+        }
+
+        this.passwordHash = passwordHash;
+    }
+
     public Set<Role> getRoles() {
         return Set.copyOf(roles);
     }
