@@ -51,10 +51,12 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username)
+    public UserResponse getUserByUsername(String username) {
+        User user = userRepository.findByUsername(username)
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "User not found"));
+        
+        return toResponse(user);
     }
 
     @Transactional(readOnly = true)
@@ -68,9 +70,24 @@ public class UserService {
     }
 
     @Transactional 
+    public UserResponse updatePassword(Long id, String newRawPassword) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "User not found"));
+
+        String passwordHash = passwordEncoder.encode(newRawPassword);
+
+        user.setPasswordHash(passwordHash);
+
+        User updatedUser = userRepository.save(user);
+        return toResponse(updatedUser);
+    }
+
+    @Transactional 
     public void deleteUserById(Long id) {
         if (!userRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+            throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "User not found");
         }
         
         userRepository.deleteById(id);
