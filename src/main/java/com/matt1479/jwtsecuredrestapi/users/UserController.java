@@ -23,8 +23,19 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 
 /*
-TODO: once you implement the feat/authorization branch, restrict getAllUsers()
-and deleteUser() to admins, and ensure users can only access their own records.
+TODO: once you implement the feat/jwt-authentication branch, restrict methods to roles:
+
+| Method            | Role                              |
+|-------------------|-----------------------------------|
+| createUser        | admin                             |
+| getUserById       | admin, user (only if ids match)   |
+| getUserByUsername | admin                             |
+| getAllUsers       | admin                             |
+| updatePassword    | admin/user (only if ids match)    |
+| deleteUserById    | admin                             |
+
+Ensure users can only access their own records.
+
 */
 
 @Validated
