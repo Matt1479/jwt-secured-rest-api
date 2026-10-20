@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 @Entity 
 public class Product {
@@ -16,15 +17,16 @@ public class Product {
     private Long id;
 
     @NotBlank 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 75)
     private String title;
 
     @NotBlank 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 750)
     private String description;
 
     // TODO: use BigDecimal
     @NotNull 
+    @Positive 
     @Column(nullable = false)
     private Double price;
 

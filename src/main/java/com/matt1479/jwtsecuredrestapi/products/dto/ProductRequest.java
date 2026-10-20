@@ -2,6 +2,7 @@ package com.matt1479.jwtsecuredrestapi.products.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 public record ProductRequest(
@@ -14,5 +15,6 @@ public record ProductRequest(
     String description,
 
     @NotNull 
+    @Positive 
     Double price
 ) {}

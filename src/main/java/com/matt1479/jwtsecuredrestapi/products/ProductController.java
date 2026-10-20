@@ -49,8 +49,8 @@ public class ProductController {
     }
     
     @GetMapping(params = {"description"})
-    public ProductResponse getProductByDescription(@RequestParam String description) {
-        return productService.getProductByDescription(description);
+    public List<ProductResponse> getProductsByDescription(@RequestParam String description) {
+        return productService.getProductsByDescription(description);
     }
 
     @GetMapping(params = {"!title", "!description"})
