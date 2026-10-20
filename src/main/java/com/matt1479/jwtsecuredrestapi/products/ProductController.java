@@ -62,10 +62,10 @@ public class ProductController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ProductResponse updateProduct(
+    public ProductResponse updateProductById(
             @PathVariable @Min(1) Long id,
             @Valid @RequestBody ProductRequest request) {
-        return productService.updateProduct(
+        return productService.updateProductById(
             id,
             request.title(),
             request.description(),
