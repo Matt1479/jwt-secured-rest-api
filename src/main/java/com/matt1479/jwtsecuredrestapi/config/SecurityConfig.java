@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -23,6 +22,8 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -42,7 +43,9 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .sessionManagement((s) -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()))
+            .oauth2ResourceServer((oauth2) -> oauth2.jwt((jwt) -> jwt
+                .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+            )
             .httpBasic(AbstractHttpConfigurer::disable)
             .formLogin(AbstractHttpConfigurer::disable);
         return httpSecurity.build();
@@ -53,6 +56,20 @@ public class SecurityConfig {
     @Bean 
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean 
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter authoritiesConverter
+            = new JwtGrantedAuthoritiesConverter();
+        
+        authoritiesConverter.setAuthorityPrefix("");
+        authoritiesConverter.setAuthoritiesClaimName("scope");
+
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
+
+        return converter;
     }
 
     @Bean 
