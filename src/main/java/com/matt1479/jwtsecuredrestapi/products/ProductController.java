@@ -3,6 +3,7 @@ package com.matt1479.jwtsecuredrestapi.products;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,7 @@ public class ProductController {
         this.productService = productService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ProductResponse createProduct(@Valid @RequestBody ProductRequest request) {
         return productService.createProduct(
@@ -58,11 +60,12 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ProductResponse updateProduct(
+    public ProductResponse updateProductById(
             @PathVariable @Min(1) Long id,
             @Valid @RequestBody ProductRequest request) {
-        return productService.updateProduct(
+        return productService.updateProductById(
             id,
             request.title(),
             request.description(),
@@ -70,6 +73,7 @@ public class ProductController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProductById(@PathVariable @Min(1) Long id) {

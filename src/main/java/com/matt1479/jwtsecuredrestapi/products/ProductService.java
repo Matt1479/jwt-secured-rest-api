@@ -76,7 +76,7 @@ public class ProductService {
     }
 
     @Transactional 
-    public ProductResponse updateProduct(
+    public ProductResponse updateProductById(
             Long id, String title, String description, Double price) {
         Product product = productRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(
