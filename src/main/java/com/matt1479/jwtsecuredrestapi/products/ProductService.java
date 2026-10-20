@@ -56,12 +56,13 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ProductResponse getProductByDescription(String description) {
-        Product product = productRepository.findByDescription(description)
-            .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Product not found"));
+    public List<ProductResponse> getProductsByDescription(String description) {
+        List<ProductResponse> products = new ArrayList<>();
 
-        return toResponse(product);
+        productRepository.findByDescription(description)
+            .forEach((product) -> products.add(toResponse(product)));
+        
+        return products; 
     }
 
     @Transactional(readOnly = true)
@@ -80,11 +81,23 @@ public class ProductService {
         Product product = productRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "Product not found"));
-        
+
+        productRepository.findByTitle(title)
+            .ifPresent((productFoundByTitle) -> {
+                if (!productFoundByTitle.getId().equals(product.getId())) {
+                    throw new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "Product with the title '%s' already exists"
+                            .formatted(title)
+                    );
+                }
+            });
+
         product.setTitle(title);
         product.setDescription(description);
         product.setPrice(price);
 
+        // TODO: handle race condition
         Product updatedProduct = productRepository.save(product);
         return toResponse(updatedProduct);
     }
