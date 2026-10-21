@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,8 +20,8 @@ import com.matt1479.jwtsecuredrestapi.products.dto.ProductResponse;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
-@Validated 
 @RestController 
 @RequestMapping("/api/products")
 public class ProductController {
@@ -35,7 +34,8 @@ public class ProductController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ProductResponse createProduct(@Valid @RequestBody ProductRequest request) {
+    public ProductResponse createProduct(
+            @Valid @RequestBody ProductRequest request) {
         return productService.createProduct(
             request.title(), request.description(), request.price());
     }
@@ -46,12 +46,14 @@ public class ProductController {
     }
 
     @GetMapping(params = {"title"})
-    public ProductResponse getProductByTitle(@RequestParam String title) {
+    public ProductResponse getProductByTitle(
+            @RequestParam @NotBlank String title) {
         return productService.getProductByTitle(title);
     }
     
     @GetMapping(params = {"description"})
-    public List<ProductResponse> getProductsByDescription(@RequestParam String description) {
+    public List<ProductResponse> getProductsByDescription(
+            @RequestParam @NotBlank String description) {
         return productService.getProductsByDescription(description);
     }
 
