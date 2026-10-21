@@ -32,7 +32,6 @@ public class ProductService {
 
         Product product = new Product(title, description, price);
 
-        // TODO: handle race condition
         Product savedProduct = productRepository.save(product);
         return toResponse(savedProduct);
     }
@@ -97,7 +96,6 @@ public class ProductService {
         product.setDescription(description);
         product.setPrice(price);
 
-        // TODO: handle race condition
         Product updatedProduct = productRepository.save(product);
         return toResponse(updatedProduct);
     }

@@ -29,14 +29,13 @@ public class UserService {
     public UserResponse createUser(String username, String rawPassword) {
         if (userRepository.existsByUsername(username)) {
             throw new ResponseStatusException(
-                HttpStatus.CONFLICT, "Username is already taken");
+                HttpStatus.CONFLICT, "Username already exists");
         }
 
         String passwordHash = passwordEncoder.encode(rawPassword);
 
         User user = new User(username, passwordHash, Set.of(Role.USER));
 
-        // TODO: handle race condition
         User savedUser = userRepository.save(user);
         return toResponse(savedUser);
     }
