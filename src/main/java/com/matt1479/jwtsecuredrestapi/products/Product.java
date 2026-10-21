@@ -24,7 +24,6 @@ public class Product {
     @Column(nullable = false, length = 750)
     private String description;
 
-    // TODO: use BigDecimal
     @NotNull 
     @Positive 
     @Column(nullable = false)
