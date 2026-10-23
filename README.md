@@ -23,6 +23,7 @@ I made this project to practice developing REST APIs with Spring Boot and implem
   - [Products](#products-1)
 - [Setup](#setup)
   - [Prerequisites](#prerequisites)
+  - [Configure MySQL](#configure-mysql)
   - [Generate an RSA Key Pair](#generate-an-rsa-key-pair)
 - [Run the Application](#run-the-application)
 - [Build and Run the JAR](#build-and-run-the-jar)
@@ -488,6 +489,39 @@ java -version
 docker --version
 docker compose version
 ```
+
+### Configure MySQL
+
+Before starting the application, configure the MySQL environment variables using one of the following methods.
+
+**Option 1: Update `compose.yaml`**
+
+```yaml
+services:
+  mysql:
+    image: 'mysql:latest'
+    environment:
+      - 'MYSQL_DATABASE=${MYSQL_DATABASE:-mydatabase}'
+      - 'MYSQL_PASSWORD=${MYSQL_PASSWORD:-secret}'
+      - 'MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-verysecret}'
+      - 'MYSQL_USER=${MYSQL_USER:-myuser}'
+    ports:
+      - '3306:3306' # HOST_PORT: CONTAINER_PORT
+```
+
+**Option 2: Set environment variables**
+
+Set the following environment variables:
+
+```bash
+export MYSQL_HOST=localhost
+export MYSQL_DATABASE=mydatabase
+export MYSQL_PASSWORD=secret
+export MYSQL_ROOT_PASSWORD=verysecret
+export MYSQL_USER=myuser
+```
+
+These example credentials are for local development only. Do not use them in production.
 
 ### Generate an RSA Key Pair
 
