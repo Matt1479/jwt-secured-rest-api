@@ -1,15 +1,26 @@
 # JWT-Secured REST API
 
-A RESTful API written in Java, using Spring Framework, with JWT-based authentication, role and resource ownership-based authorization.
+A REST API built with Java and Spring Boot that demonstrates stateless JWT authentication, role-based access control, and resource-ownership authorization. It exposes endpoints for registering and authenticating users, managing user accounts, and managing products, with MySQL persistence through Spring Data JPA.
 
-The API supports CRUD operations for users and products.
+I made this project to practice developing REST APIs with Spring Boot and implementing authentication and authorization using JWT.
 
-The application uses Spring Data JPA and a MySQL database for data persistence.
+## Features
+
+- **JWT authentication**: register an account and log in to receive a signed access token.
+- **Stateless request authentication**: Spring Security validates bearer tokens on protected endpoints.
+- **Role-based authorization**: restrict administrative operations to users with the `ADMIN` role.
+- **Resource-ownership authorization**: users can retrieve their own account details and update their own password.
+- **User management**: create, retrieve, list, update the password of, and delete user accounts, subject to access rules.
+- **Product management**: create, retrieve, search, update, and delete products, subject to access rules.
+- **Input validation**: Jakarta Bean Validation constraints validate request bodies and selected request parameters.
+- **Password hashing**: passwords are encoded with BCrypt before being stored.
+- **Relational persistence**: Spring Data JPA stores users, roles, and products in MySQL.
+- **RSA-signed JWTs**: an RSA key pair is used to sign and verify access tokens.
 
 ## Tech Stack
 
-- Java (version: `25`)
-- Spring Boot (version: `4.1.1`)
+- Java (version: 25)
+- Spring Boot (version: 4.1.1)
     - Spring Web
     - Spring Security
     - OAuth2 Resource Server
@@ -19,108 +30,110 @@ The application uses Spring Data JPA and a MySQL database for data persistence.
     - Testcontainers
     - Validation
 - Maven
-- Postman
+- Docker Compose
+- OpenSSL (for generating the RSA key pair)
+- Postman (for manual API testing)
 
-## Features
+## Project Structure
 
-- RESTful API using Spring's `@RestController`
-- Data persistence using Spring Data JPA
-- MySQL relational database
-- users; User management (CRUD operations for users)
-- products; Product management (CRUD operations for products)
-- auth; JWT-based authentication
-- Role-based authorization
-- Resource ownership-based authorization
+The following tree covers `src/main/java/`:
 
-## Project/Package Structure
-
-<details>
-
-<summary>View</summary>
-
-`src/main/java/`
-
-```
+```text
 com.matt1479.jwtsecuredrestapi/
-|-- JwtSecuredRestApiApplication.java
-|-- auth
-|   |-- AuthController.java
-|   |-- TokenService.java
-|   `-- dto
-|       |-- LoginRequest.java        
-|       |-- RegisterRequest.java     
-|       `-- TokenResponse.java  
-|-- config
-|   |-- RsaKeyProperties.java   
-|   `-- SecurityConfig.java     
-|-- products
-|   |-- Product.java
-|   |-- ProductController.java  
-|   |-- ProductRepository.java  
-|   |-- ProductService.java     
-|   `-- dto
-|       |-- ProductRequest.java      
-|       `-- ProductResponse.java     
-|-- security
-|   `-- AuthorizationService.java    
-`-- users
-    |-- CustomUserDetailsService.java
-    |-- Role.java
-    |-- User.java
-    |-- UserController.java
-    |-- UserRepository.java
-    |-- UserService.java
-    `-- dto
-        |-- UpdatePasswordRequest.java
-        |-- UserRequest.java
-        `-- UserResponse.java
+├── JwtSecuredRestApiApplication.java
+├── auth/
+│   ├── AuthController.java
+│   ├── TokenService.java
+│   └── dto/
+│       ├── LoginRequest.java
+│       ├── RegisterRequest.java
+│       └── TokenResponse.java
+├── config/
+│   ├── RsaKeyProperties.java
+│   └── SecurityConfig.java
+├── products/
+│   ├── Product.java
+│   ├── ProductController.java
+│   ├── ProductRepository.java
+│   ├── ProductService.java
+│   └── dto/
+│       ├── ProductRequest.java
+│       └── ProductResponse.java
+├── security/
+│   └── AuthorizationService.java
+└── users/
+    ├── CustomUserDetailsService.java
+    ├── Role.java
+    ├── User.java
+    ├── UserController.java
+    ├── UserRepository.java
+    ├── UserService.java
+    └── dto/
+        ├── UpdatePasswordRequest.java
+        ├── UserRequest.java
+        └── UserResponse.java
 ```
 
-- `JwtSecuredRestApiApplication`: application entry point
-- `auth`: TODO (short description)
-    - `dto`: request and response records used for data transfer
-- `config`: TODO (short description)
-- `products`: product-related functionality, including Product entity, repository, service, and controller
-    - `dto`: request and response records used for data transfer
-- `security`: TODO (short description)
-- `users`: user-related functionality, including User entity, repository, service, and controller (as well as Role enum and CustomUserDetailsService)
-    - `dto`: request and response records used for data transfer
+### Package Responsibilities
 
-</details>
+- `JwtSecuredRestApiApplication`: Spring Boot application entry point; enables binding of RSA key properties.
+- `auth`: login and registration endpoints, access-token creation, and authentication request/response DTOs.
+  - `dto`: records used to validate incoming authentication requests and shape responses.
+- `config`: Spring Security configuration, JWT encoder/decoder setup, password encoding, and RSA key configuration.
+- `products`: product entity, repository, service-layer operations, REST endpoints, and product DTOs.
+  - `dto`: validated product request and product response records.
+- `security`: authorization helper methods used to check whether the authenticated user owns a requested account.
+- `users`: user entity, role enum, repository, service-layer operations, REST endpoints, and the `UserDetailsService` implementation.
+  - `dto`: user request/response records and the password-update request record.
 
 ## Branch Structure
 
+The project was developed in feature-oriented branches:
+
 1. `chore/setup`: project configuration and dependencies.
-2. `feat/users`: User entity, repository, service, and controller.
-3. `feat/jwt-authentication`: JWT authentication (login, register, token generation, and JWT validation).
-4. `feat/products`: Product entity, repository, service, and controller.
-5. `feat/authorization`: access restrictions; role and resource ownership checks.
-6. `docs/readme`: README file.
+2. `feat/users`: user entity, repository, service, and controller.
+3. `feat/jwt-authentication`: registration, login, token generation, and JWT validation.
+4. `feat/products`: product entity, repository, service, and controller.
+5. `feat/authorization`: role-based and resource-ownership access restrictions.
+6. `docs/readme`: README documentation.
 
-### Strategy/Principle(s)
+### Merge Strategy
 
-Merge each branch into `main` before starting the next.
-
-Specify the merge commit message:
+Merge each feature branch into `main` before starting the next branch. Use `--no-ff` to ensure Git creates a merge commit and `-m` to set its message:
 
 ```bash
 git switch main # switch=checkout
-git merge --no-ff branch-name -m "type(scope): description";
+git merge --no-ff branch-name -m "type(scope): description"
 ```
 
-- `--no-ff` ensures Git creates a merge commit
-- `-m` sets its message
+The message format follows [Conventional Commits](https://www.conventionalcommits.org/).
+
+## Authentication and Authorization
+
+- **Unauthenticated endpoints**: `POST /api/auth/login` and `POST /api/auth/register`.
+- **Authenticated endpoints**: user and product endpoints require a valid bearer token.
+- **`USER` role**: can read product resources and access their own user details; can update their own password.
+- **`ADMIN` role**: can manage products and perform administrative user operations.
+- **Ownership checks**: user-detail access is restricted to the account owner or an administrator. Password updates are restricted to the account owner.
+
+Newly registered users receive the `USER` role. The public registration endpoint does not let callers assign themselves the `ADMIN` role.
+
+Send the token in the `Authorization` header when calling a protected endpoint:
+
+```http
+Authorization: Bearer <access-token>
+```
 
 ## API Endpoints
 
-To test the endpoints that require the admin role, you will need to manually insert a role of `"ADMIN"` to an existing user using SQL. See: [Docker and MySQL](#docker-and-mysql) to learn how run the MySQL CLI inside a Docker container.
+`{id}` represents a user or product ID. Request-body constraints are described in the examples below.
 
-### Auth
+### Authentication
 
 <details>
 <summary>View endpoints</summary>
 
-Endpoints accessible by anyone.
+These endpoints are public
 
 | Method    | Endpoint              | Description   |
 |-----------|-----------------------|---------------|
@@ -134,16 +147,16 @@ Endpoints accessible by anyone.
 <details>
 <summary>View endpoints</summary>
 
-Endpoints accessible by authenticated users.
+All endpoints below require authentication. Access restrictions are shown in the last column.
 
-| Method    | Endpoint                          | Description           | Access                |
-|-----------|-----------------------------------|-----------------------|-----------------------|
-| POST      | /api/users                        | Create user           | Admin                 |
-| GET       | /api/users/{id}                   | Get user by ID        | Admin or owner of ID  |
-| GET       | /api/users?username=example       | Get user by username  | Admin or owner of ID  |
-| GET       | /api/users                        | Get all users         | Admin                 |
-| PATCH     | /api/users/{id}/updatePassword    | Update password       | Owner of ID           |
-| DELETE    | /api/users/{id}                   | Delete user by ID     | Admin                 |
+| Method    | Endpoint                          | Description               | Access                            |
+|-----------|-----------------------------------|---------------------------|-----------------------------------|
+| POST      | /api/users                        | Create a user             | Admin                             |
+| GET       | /api/users/{id}                   | Get a user by ID          | Admin or owner of that ID         |
+| GET       | /api/users?username=example       | Get a user by username    | Admin or owner of that username   |
+| GET       | /api/users                        | Get all users             | Admin                             |
+| PATCH     | /api/users/{id}/updatePassword    | Update a user's password  | Owner of that ID                  |
+| DELETE    | /api/users/{id}                   | Delete a user by ID       | Admin                             |
 
 </details>
 
@@ -152,48 +165,45 @@ Endpoints accessible by authenticated users.
 <details>
 <summary>View endpoints</summary>
 
-Endpoints accessible by authenticated users.
+All product endpoints require authentication. Product reads are available to authenticated users; writes are restricted to administrators.
 
-| Method    | Endpoint                          | Description                   | Access        |
-|-----------|-----------------------------------|-------------------------------|---------------|
-| POST      | /api/products                     | Create product                | Admin         |
-| GET       | /api/products/{id}                | Get product by ID             | Admin, User   |
-| GET       | /api/products?title=value         | Get product by title          | Admin, User   |
-| GET       | /api/products?description=value   | Get product by description    | Admin, User   |
-| GET       | /api/products                     | Get all products              | Admin, User   |
-| PUT       | /api/products/{id}                | Update product by ID          | Admin         |
-| DELETE    | /api/products/{id}                | Delete product by ID          | Admin         |
+| Method    | Endpoint                          | Description                       | Access                |
+|-----------|-----------------------------------|-----------------------------------|-----------------------|
+| POST      | /api/products                     | Create a product                  | Admin                 |
+| GET       | /api/products/{id}                | Get a product by ID               | Authenticated User    |
+| GET       | /api/products?title=example       | Get a product by exact title      | Authenticated User    |
+| GET       | /api/products?description=example | Get products by exact description | Authenticated User    |
+| GET       | /api/products                     | Get all products                  | Authenticated User    |
+| PUT       | /api/products/{id}                | Update a product by ID            | Admin                 |
+| DELETE    | /api/products/{id}                | Delete a product by ID            | Admin                 |
+
+The title and description lookups currently use exact matches, not partial-text search.
 
 </details>
 
-## Examples
+## Request and Response Examples
 
-### Auth
+Examples use JSON. Validation failures depend on the application's configured Spring validation/error handling.
+
+### Authentication
 
 <details>
 
 <summary>View examples</summary>
 
-Endpoints accessible by anyone.
-
 1. Log In.
 
-Method: `POST`.
-
-Endpoint: `/api/auth/login`.
-
-Request body:
+`POST /api/auth/login`
 
 ```json
 {
-    "username": "example",      // @NotBlank
-    "password": "examplePasswd" // @NotBlank
+    "username": "example",
+    "password": "examplePasswd"
 }
 ```
+Both fields must be non-blank.
 
-`@NotBlank`: can't be empty or consisting of only whitespace characters.
-
-Response:
+Example response:
 
 ```json
 {
@@ -202,27 +212,24 @@ Response:
 }
 ```
 
-`expiresInSeconds` is based on the value of jwt.ttl-minutes, defined in application.yaml.
+`expiresInSeconds` is derived from `jwt.ttl-minutes` in the application configuration. The example value assumes a 60-minute token lifetime.
 
 2. Register.
 
-Method: `POST`.
-
-Endpoint: `/api/auth/register`.
-
-Request body:
+`POST /api/auth/register`
 
 ```json
 {
-    "username": "example",      // @NotBlank @Size(min = 3, max = 15)
-    "password": "examplePasswd" // @NotBlank @Size(min = 8, max = 20)
+    "username": "example",
+    "password": "examplePasswd"
 }
 ```
 
-`@NotBlank`: can't be empty or consisting of only whitespace characters.
-`@Size(min, max)`: must be between min and max, including both ends.
+Constraints:
+- `username`: required, 3-15 characters.
+- `password`: required, 8-20 characters.
 
-Response:
+Example response:
 
 ```json
 {
@@ -240,48 +247,30 @@ Response:
 
 <summary>View examples</summary>
 
-Endpoints accessible by authenticated users.
-
 1. Create user.
 
-Method: `POST`.
-
-Endpoint: `/api/users`.
-
-Access: `Admin`.
-
-Request body:
+`POST /api/users` - `ADMIN` only.
 
 ```json
 {
-    "username": "example",      // @NotBlank @Size(min = 3, max = 15)
-    "password": "examplePasswd" // @NotBlank @Size(min = 8, max = 20)
-}
-```
-
-Response:
-
-```json
-{
-    "id": 123,
     "username": "example",
-    "roles": ["USER"]
+    "password": "examplePasswd"
 }
 ```
+
+Constraints:
+- `username`: required, 3-15 characters.
+- `password`: required, 8-20 characters.
+
+The response has the same shape as the registration response. New users receive the `USER` role.
 
 2. Get user by ID.
 
-Method: `GET`.
+`GET /api/users/123`.
 
-Endpoint: `/api/users/{id}`.
+Access: `Admin` or the owner of user ID `123`.
 
-Access: `Admin or owner of ID`.
-
-Path variable:
-
-`id`, greater than or equal to `1` (`@Min(1)`)
-
-Response:
+Example response:
 
 ```json
 {
@@ -290,38 +279,22 @@ Response:
     "roles": ["USER"]
 }
 ```
+
+The ID must be at least `1`.
 
 3. Get user by username.
 
-Method: `GET`.
+`GET /api/users?username=example`.
 
-Endpoint: `/api/users?username=example`.
+Access: `Admin` or the owner of username `example`.
 
-Access: `Admin or owner of username`.
-
-Request parameter:
-
-`username`, `@NotBlank`
-
-Response:
-
-```json
-{
-    "id": 123,
-    "username": "example",
-    "roles": ["USER"]
-}
-```
+The `username` query parameter must not be blank. The response has the same shape as the get-user-by-ID response.
 
 4. Get all users.
 
-Method: `GET`.
+`GET /api/users` - `ADMIN` only.
 
-Endpoint: `/api/users`.
-
-Access: `Admin`.
-
-Response:
+Example response:
 
 ```json
 [
@@ -340,47 +313,21 @@ Response:
 
 5. Update password.
 
-Method: `PATCH`.
-
-Endpoint: `/api/users/{id}/updatePassword`.
-
-Access: `Owner of ID`.
-
-Path variable:
-
-`id`.
-
-Request body:
+`PATCH /api/users/123/updatePassword` - owner of user ID `123` only.
 
 ```json
 {
-    "password": "examplePasswd" // @NotBlank @Size(min = 8, max = 20)
+    "password": "newExamplePasswd"
 }
 ```
 
-Response:
+The password must be non-blank and 8-20 characters long. On success, the endpoint returns `204 No Content` with no response body.
 
-`void`.
+6. Delete a user.
 
-HTTP status code: `204` (`NO_CONTENT`).
+`DELETE /api/users/123` - `ADMIN` only.
 
-6. Delete user by ID.
-
-Method: `DELETE`.
-
-Endpoint: `/api/users/{id}`.
-
-Access: `Admin`.
-
-Path variable:
-
-`id`.
-
-Response:
-
-`void`.
-
-HTTP status code: `204` (`NO_CONTENT`).
+On success, the endpoint returns `204 No Content` with no response body.
 
 </details>
 
@@ -390,220 +337,170 @@ HTTP status code: `204` (`NO_CONTENT`).
 
 <summary>View examples</summary>
 
-Endpoints accessible by authenticated users.
-
 1. Create product.
 
-Method: `POST`.
-
-Endpoint: `/api/products`.
-
-Access: `Admin`.
-
-Request body:
+`POST /api/products` - `ADMIN` only.
 
 ```json
 {
-    "title": "example",         // @NotBlank @Size(max = 75)
-    "description": "example",   // @NotBlank @Size(max = 750)
-    "price": 12.34              // @NotNull @Positive
+    "title": "example",
+    "description": "example description",
+    "price": 12.34
 }
 ```
 
-Response:
+Constraints:
+- `title`: required, at most 75 characters.
+- `description`: required, at most 750 characters.
+- `price`: required and greater than zero.
+
+Example response:
 
 ```json
 {
     "id": 123,
     "title": "example",
-    "description": "example",
+    "description": "example description",
     "price": 12.34
 }
 ```
 
-2. Get product by ID.
+Product titles must be unique.
 
-Method: `GET`.
+2. Get a product by ID.
 
-Endpoint: `/api/products/{id}`.
+`GET /api/products/123`.
 
-Access: `Admin, User`.
+Available to any authenticated user.
 
-Response:
+Example response:
 
 ```json
 {
     "id": 123,
     "title": "example",
-    "description": "example",
+    "description": "example description",
     "price": 12.34
 }
 ```
 
-3. Get product by title.
+3. Get a product by title.
 
-Method: `GET`.
+`GET /api/products?title=example`.
 
-Endpoint: `/api/products?title=example`.
-
-Access: `Admin, User`.
-
-Request parameter:
-
-`title`, `@NotBlank`.
-
-Response:
-
-```json
-{
-    "id": 123,
-    "title": "example",
-    "description": "example",
-    "price": 12.34
-}
-```
+Available to any authenticated user. The `title` parameter must not be blank. The lookup is an exact match and returns one product or `404 Not Found`.
 
 4. Get products by description.
 
-Method: `GET`.
+`GET /api/products?description=example`.
 
-Endpoint: `/api/products?description=example`.
-
-Access: `Admin, User`.
-
-Request parameter:
-
-`description`, `@NotBlank`.
-
-Response:
-
-```json
-[
-    {
-        "id": 123,
-        "title": "example",
-        "description": "example",
-        "price": 12.34
-    },
-    {
-        "id": 456,
-        "title": "anotherExample",
-        "description": "example",
-        "price": 45.67
-    }
-]
-```
+Available to any authenticated user. The `description` parameter must not be blank. The lookup is an exact match and returns a list, which may be empty.
 
 5. Get all products.
 
-Method: `GET`.
+`GET /api/products`.
 
-Endpoint: `/api/products`.
+Available to any authenticated user.
 
-Access: `Admin, User`.
-
-Response:
+Example response:
 
 ```json
 [
     {
         "id": 123,
         "title": "example",
-        "description": "example",
+        "description": "example description",
         "price": 12.34
     },
     {
         "id": 456,
         "title": "anotherExample",
-        "description": "example",
+        "description": "example description",
         "price": 45.67
     }
 ]
 ```
 
-6. Update product by ID.
+6. Update a product.
 
-Method: `PUT`.
-
-Endpoint: `/api/products/{id}`.
-
-Access: `Admin`.
-
-Path variable:
-
-`id`.
-
-Request body:
+`PUT /api/products/123` - `ADMIN` only.
 
 ```json
 {
-    "title": "exampleUpdated",          // @NotBlank @Size(max = 75)
-    "description": "exampleUpdated",    // @NotBlank @Size(max = 750)
-    "price": 11.22                      // @NotNull @Positive
-}
-```
-
-Response:
-
-```json
-{
-    "id": 123,
     "title": "exampleUpdated",
-    "description": "exampleUpdated",
+    "description": "updated description",
     "price": 11.22
 }
 ```
 
-7. Delete product by ID.
+The request uses the same validation constraints as product creation. Product titles must remain unique. The response contains the updated product.
 
-Method: `DELETE`.
+7. Delete a product.
 
-Endpoint: `/api/products/{id}`.
+`DELETE /api/products/123` - `ADMIN` only.
 
-Access: `Admin`.
-
-Path variable:
-
-`id`.
-
-Response:
-
-`void`.
-
-HTTP status code: `204` (`NO_CONTENT`).
+On success, the endpoint returns `204 No Content` with no response body.
 
 </details>
 
 ## Setup
 
+### Prerequisites
+
+Install or provide:
+- Java 25
+- Docker with the Docker Compose plugin
+- OpenSSL
+
+Check that Java and Docker are available:
+
+```bash
+java -version
+docker --version
+docker compose version
+```
+
 ### Generate an RSA Key Pair
+
+From the project root, run:
 
 ```bash
 mkdir -p src/main/resources/certs
 cd src/main/resources/certs
+
 openssl genrsa -out keypair.pem 2048
 openssl rsa -in keypair.pem -pubout -out public.pem
 openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in keypair.pem -out private.pem
 rm keypair.pem
 ```
 
-Refer to [Securing REST APIs in Spring Boot 4 with JWT](https://ajinkya-mundankar.medium.com/securing-rest-apis-in-spring-boot-4-with-jwt-the-2026-way-no-custom-filters-5d36ab500e81) # Step 2 - Generate an RSA key pair.
+This creates:
+- `public.pem` - used to verify JWT signatures.
+- `private.pem` - used to sign JWTs.
+
+Ensure the key locations match the `rsa` properties in the application's configuration. Do not commit private keys or use development keys in production.
+
+For background, see [Securing REST APIs in Spring Boot 4 with JWT](https://ajinkya-mundankar.medium.com/securing-rest-apis-in-spring-boot-4-with-jwt-the-2026-way-no-custom-filters-5d36ab500e81) # Step 2 - Generate an RSA key pair.
 
 ## Run the Application
 
-Run the application with Maven:
+From the project root, run:
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-## Build the Application
+Make sure the database is running and the application configuration points to it.
 
-Start the MySQL container:
+## Build and Run the JAR
+
+Start the MySQL container - from the project root, run:
 
 ```bash
 docker compose up -d
 ```
+
+The Compose service is referenced as `mysql` in the commands below. Check `compose.yaml` for the configured database, user, and password.
 
 Build the JAR file:
 
@@ -617,6 +514,8 @@ Run the JAR file:
 java -jar target/jwt-secured-rest-api-0.0.1-SNAPSHOT.jar
 ```
 
+The JAR file name may differ if the Maven project version or artifact name changes.
+
 ## Docker and MySQL
 
 Run the MySQL CLI inside the Docker container:
@@ -625,20 +524,41 @@ Run the MySQL CLI inside the Docker container:
 docker compose exec mysql mysql -u root -p
 ```
 
-You will need to provide MySQL root password defined in [compose.yaml](compose.yaml).
+You will need to provide the MySQL root password defined in [compose.yaml](compose.yaml).
 
-## What You'd Change For Production
+### Assigning an administrator role for testing
 
-- Load keys from a secrets manager, not the classpath
-- Add refresh tokens
-- Configure CORS if your frontend is on a different origin
+Newly registered and admin-created users receive only the `USER` role. To test admin-only endpoints, assign the `ADMIN` role to an existing user in the `user_roles` table. First inspect the actual schema and username-to-ID mapping in your local database; then insert the role for the correct user ID. For example:
+
+```sql
+SELECT id, username FROM user;
+SELECT user_id, role FROM user_roles;
+```
+
+If your MySQL version treats `user` as a reserved word, quote the table name with backticks: `` `user` ``.
+
+Only do this in a local development database. Never expose administrative database credentials or grant roles based on untrusted user input.
+
+## Recommended Changes For Production
+
+- Store keys in a secrets manager, instead of the classpath.
+- Keep private keys and credentials out of version control.
+- Implement refresh tokens.
+- Configure CORS if browser-based clients use a different origin.
+- Use `BigDecimal` instead of `Double` for currency.
 
 Refer to [Securing REST APIs in Spring Boot 4 with JWT](https://ajinkya-mundankar.medium.com/securing-rest-apis-in-spring-boot-4-with-jwt-the-2026-way-no-custom-filters-5d36ab500e81) # What you'd change for production.
 
+### Additional Recommendation
+
+- Ensure error responses do not expose internal details.
+
 ## References
 
-- [HTTP status codes reference](https://http.cat/)
-- [Conventional Commits](https://www.conventionalcommits.org/)
+- Documentation: [OAuth 2.0 Resource Server JWT :: Spring Security](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html).
+- [Conventional Commits](https://www.conventionalcommits.org/).
+- [HTTP Cats: HTTP status code reference](https://http.cat/).
+- [Spring Initializr](https://start.spring.io/).
 
 ### Tutorials
 
@@ -653,11 +573,3 @@ Basically all the tutorials that allowed me to get to this point:
 6. [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa).
 7. [Accessing data with MySQL](https://spring.io/guides/gs/accessing-data-mysql).
 8. JWT article: [Securing REST APIs in Spring Boot 4 with JWT](https://ajinkya-mundankar.medium.com/securing-rest-apis-in-spring-boot-4-with-jwt-the-2026-way-no-custom-filters-5d36ab500e81).
-
-### Documentation
-
-[OAuth 2.0 Resource Server JWT](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html).
-
-### Tools
-
-- [Spring Initializr](https://start.spring.io/)
