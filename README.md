@@ -4,6 +4,35 @@ A REST API built with Java and Spring Boot that demonstrates stateless JWT authe
 
 I made this project to practice developing REST APIs with Spring Boot and implementing authentication and authorization using JWT.
 
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+  - [Package Responsibilities](#package-responsibilities)
+- [Branch Structure](#branch-structure)
+  - [Merge Strategy](#merge-strategy)
+- [Authentication and Authorization](#authentication-and-authorization)
+- [API Endpoints](#api-endpoints)
+  - [Authentication](#authentication)
+  - [Users](#users)
+  - [Products](#products)
+- [Request and Response Examples](#request-and-response-examples)
+  - [Authentication](#authentication-1)
+  - [Users](#users-1)
+  - [Products](#products-1)
+- [Setup](#setup)
+  - [Prerequisites](#prerequisites)
+  - [Generate an RSA Key Pair](#generate-an-rsa-key-pair)
+- [Run the Application](#run-the-application)
+- [Build and Run the JAR](#build-and-run-the-jar)
+- [Docker and MySQL](#docker-and-mysql)
+  - [Assigning an Administrator Role for Testing](#assigning-an-administrator-role-for-testing)
+- [Recommended Changes for Production](#recommended-changes-for-production)
+  - [Additional Recommendation](#additional-recommendation)
+- [References](#references)
+  - [Tutorials](#tutorials)
+
 ## Features
 
 - **JWT authentication**: register an account and log in to receive a signed access token.
@@ -526,7 +555,7 @@ docker compose exec mysql mysql -u root -p
 
 You will need to provide the MySQL root password defined in [compose.yaml](compose.yaml).
 
-### Assigning an administrator role for testing
+### Assigning an Administrator Role for Testing
 
 Newly registered and admin-created users receive only the `USER` role. To test admin-only endpoints, assign the `ADMIN` role to an existing user in the `user_roles` table. First inspect the actual schema and username-to-ID mapping in your local database; then insert the role for the correct user ID. For example:
 
@@ -539,7 +568,7 @@ If your MySQL version treats `user` as a reserved word, quote the table name wit
 
 Only do this in a local development database. Never expose administrative database credentials or grant roles based on untrusted user input.
 
-## Recommended Changes For Production
+## Recommended Changes for Production
 
 - Store keys in a secrets manager, instead of the classpath.
 - Keep private keys and credentials out of version control.
